@@ -1,6 +1,6 @@
 all: first_try
 
-my_prog: test.o allocator.o 
+first_try: test.o allocator.o 
 		g++ -o first_try test.o allocator.o
 
 allocator.o: allocator.cpp allocator.h
