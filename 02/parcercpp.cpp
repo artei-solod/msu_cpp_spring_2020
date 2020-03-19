@@ -3,23 +3,30 @@
 #include <string>
 #include "parcerh.h"
 
-
-parcing::parcing(ontoken n, ontoken s, edge st, edge fi)
-{
-    callbacknum = n;
-    callbackstr = s;
-    start = st;
-    finish = fi;
+void number_callback(ontoken callback) {
+    callbacknum = callback;
 }
 
-void parcing::identify_token(std::string& token)
+void word_callback(ontoken callback) {
+    callbackstr = callback;
+}
+
+void start_callback(edge callback) {
+    start = callback;
+}
+
+void finish_callback(edge callback) {
+    finish = callback;
+}
+
+void identify_token(std::string& token)
 {
 	char c = token[0];
 	if (c >= '0' && c <= '9') callbacknum(token);
 	else callbackstr(token);
 }
 
-void parcing::parce(const std::string& text)
+void parse(const std::string& text)
 {
     size_t pos_1 = 0;
     size_t found;

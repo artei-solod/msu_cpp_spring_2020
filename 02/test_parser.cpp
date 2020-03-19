@@ -5,12 +5,7 @@
 
 void onNumberFound(std::string& n)
 {
-	int res = 0;
-	for (int i = 0; i < n.length(); i++)
-	{
-		res = res * 10 + (n[i] - '0');
-	}
-	std::cout << res << '\n';
+	std::cout << n << '\n';
 	return;
 }
 
@@ -31,7 +26,11 @@ void ParceFinish()
 }
 int main()
 {
-	parcing pr(onNumberFound, onStringFound, ParceStart, ParceFinish);
-	pr.parce("sfsd 4253/nwefdw/t3245");
+	start_callback(ParceStart);
+	number_callback(onNumberFound);
+	word_callback(onStringFound);
+	finish_callback(ParceFinish);
+	
+	parse("sfsd 4253/nwefdw/t3245");
 	return 0;
 }

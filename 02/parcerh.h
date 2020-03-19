@@ -4,15 +4,15 @@
 using ontoken = void (*)(std::string&);
 using edge = void (*)();
 
-class parcing
-{
-	ontoken callbacknum;
-	ontoken callbackstr;
-	edge start;
-	edge finish;
-public:
-	parcing(ontoken, ontoken, edge, edge);
-	void identify_token(std::string&);
-	void parce(const std::string& );
-};
+void number_callback(ontoken callback);
+
+void word_callback(ontoken callback);
+
+void start_callback(edge callback);
+
+void finish_callback(edge callback);
+
+void parse(const std::string& str);
+
+void identify_token(std::string& str);
 #endif
