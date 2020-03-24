@@ -1,42 +1,40 @@
-#include <iostream>
-#include <cstdio>
-#include <string>
 #include "parcerh.h"
 
-void number_callback(ontoken callback) {
-    callbacknum = callback;
+onint inttoken = nullptr;
+ontoken strtoken = nullptr;
+edge start = nullptr;
+edge finish = nullptr;
+
+void intcallback(onint callback) {
+    inttoken = callback;
 }
 
-void word_callback(ontoken callback) {
-    callbackstr = callback;
+void strcallback(ontoken callback) {
+    strtoken = callback;
 }
 
-void start_callback(edge callback) {
+void startcallback(edge callback) {
     start = callback;
 }
 
-void finish_callback(edge callback) {
+void finishcallback(edge callback) {
     finish = callback;
 }
 
-void identify_token(std::string& token)
-{
-	char c = token[0];
-	if (c >= '0' && c <= '9') callbacknum(token);
-	else callbackstr(token);
-}
-
-void parse(const std::string& text)
-{
+void parse(const std::string& str) {
+    if (start != nullptr) start();
     size_t pos_1 = 0;
     size_t found;
     std::string token;
-    start();
 
-    while ((found = text.find_first_of(" \n\t", pos_1)) != std::string::npos) {
-        token = text.substr(pos_1, found);
-        identify_token(token);
-        pos_1 = found + 1;
+    while ((found = str.find_first_of(" \n\t", pos_1)) != std::string::npos) {
+        token = str.substr(pos_1, found - pos_1);
+        if ((isdigit(token[0])) && (inttoken != nullptr)) {
+            int number = atoi(token.c_str());
+            inttoken(number);
+        }
+        else if (strtoken != nullptr) strtoken(token);
+        pos_1 = str.find_first_not_of(" \n\t", found);
     }
-    finish();
+    if (finish != nullptr) finish();
 }

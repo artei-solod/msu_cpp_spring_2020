@@ -1,18 +1,18 @@
-#ifndef	_PARCE_H_
-#define	_PARCE_H_
+#include <iostream> 
+#include <string> 
+#include <cstddef>
 
-using ontoken = void (*)(std::string&);
+using ontoken = void (*)(std::string token);
 using edge = void (*)();
+using onint = void (*)(int token);
 
-void number_callback(ontoken callback);
+void intcallback(onint callback);
 
-void word_callback(ontoken callback);
+void strcallback(ontoken callback);
 
-void start_callback(edge callback);
+void startcallback(edge callback);
 
-void finish_callback(edge callback);
+void finishcallback(edge callback);
 
 void parse(const std::string& str);
 
-void identify_token(std::string& str);
-#endif

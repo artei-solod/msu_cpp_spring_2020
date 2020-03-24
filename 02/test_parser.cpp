@@ -1,36 +1,27 @@
-#include <iostream>
-#include <cstdio>
-#include <string>
 #include "parcerh.h"
 
-void onNumberFound(std::string& n)
-{
-	std::cout << n << '\n';
-	return;
+
+void Begin() {
+    std::cout << "start parse ";
 }
 
-void onStringFound(std::string& s)
-{
-	std::cout << s << '\n';
-	return;
+void End() {
+    std::cout << " finish parse\n";
 }
 
-void ParceStart()
-{
-	std::cout << "start\n";
+void intdetect(int n) {
+    std::cout << n << " ";
 }
 
-void ParceFinish()
-{
-	std::cout << "finish\n";
+void strdetect(std::string n) {
+    std::cout << n << " ";
 }
-int main()
-{
-	start_callback(ParceStart);
-	number_callback(onNumberFound);
-	word_callback(onStringFound);
-	finish_callback(ParceFinish);
-	
-	parse("sfsd 4253/nwefdw/t3245");
-	return 0;
+
+int main() {
+    intcallback(intdetect);
+    strcallback(strdetect);
+    startcallback(Begin);
+    finishcallback(End);
+    parse("ewrwef gerfer\n12343\tHwerwe");
+    return 0;
 }
