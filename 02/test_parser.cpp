@@ -13,7 +13,7 @@ void intdetect(int n) {
     std::cout << n << " ";
 }
 
-void strdetect(std::string n) {
+void strdetect(std::string& n) {
     std::cout << n << " ";
 }
 

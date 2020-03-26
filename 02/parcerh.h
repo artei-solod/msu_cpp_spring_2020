@@ -2,7 +2,7 @@
 #include <string> 
 #include <cstddef>
 
-using ontoken = void (*)(std::string token);
+using ontoken = void (*)(std::string& token);
 using edge = void (*)();
 using onint = void (*)(int token);
 
