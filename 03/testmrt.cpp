@@ -2,11 +2,11 @@
 #include "mxtlib.h"
 int main()
 {
-    int m = 2;
-    int n = 2;
-    matrix a(m, n);
-    for (int i = 0; i < m; i++) {
-        for (int j = 0; j < n; j++) {
+    size_t m = 2;
+    size_t n = 2;
+    Matrix a(m, n);
+    for (size_t i = 0; i < m; i++) {
+        for (size_t j = 0; j < n; j++) {
             a[i][j] = i * j;
         }
     }

@@ -3,7 +3,7 @@
 using namespace std;
 
 
-matrix::matrix(int row, int col)
+Matrix::Matrix(size_t row, size_t col)
 {
     Row = row;  //переменным Row и Col присваиютс€ вводимые значени€ числа строк и столбцов матрицы
     Col = col;
@@ -11,30 +11,30 @@ matrix::matrix(int row, int col)
     for (int i = 0; i < row; i++) Value[i] = new double[col];
 }
 
-matrix::matrix(const matrix& m) //копирующий конструктор - создает копию матрицы m
+Matrix::Matrix(const Matrix& m) //копирующий конструктор - создает копию матрицы m
     :Row(m.Row), Col(m.Col)
 {
     Value = new double* [Row];
-    for (int i = 0; i < Row; i++)  Value[i] = new double[Col];
-    for (int i = 0; i < Row; i++)
+    for (size_t i = 0; i < Row; i++)  Value[i] = new double[Col];
+    for (size_t i = 0; i < Row; i++)
     {
-        for (int j = 0; j < Col; j++)
+        for (size_t j = 0; j < Col; j++)
             Value[i][j] = m.Value[i][j];
     } // значени€ элементов матрицы будут такими же, как у матрицы m
 }
-matrix::Vec::Vec(double * mas, int sz)
+Matrix::Vec::Vec(double * mas, size_t sz)
 {
     vn = sz;
     v = mas;
 }
 
-double& matrix::Vec::operator[](const int i)
+double& Matrix::Vec::operator[](const size_t i)
 {
     if (i >= vn) throw std::out_of_range("Size Error!");
     return (this->v)[i];
 }
 
-matrix::Vec matrix::operator[](int i) const
+Matrix::Vec Matrix::operator[](size_t i) const
 {
     if (i >= Row) throw std::out_of_range("Size Error!");
     Vec r(Value[i], Col);
@@ -43,74 +43,78 @@ matrix::Vec matrix::operator[](int i) const
 
 
 
-int matrix::GetRow() //функци€ получает значение числа строк
+size_t Matrix::GetRow() //функци€ получает значение числа строк
 {
     return (Row);
 }
 
-int matrix::GetCol() //функци€ получает значение числа столбцов
+size_t Matrix::GetCol() //функци€ получает значение числа столбцов
 {
     return (Col);
 }
 
-istream& operator>>(istream& istr, matrix& m) // перегрузка оператора ввода матрицы
+istream& operator>>(istream& istr, Matrix& m) // перегрузка оператора ввода матрицы
 {
-    for (int i = 0; i < m.GetRow(); i++)
-        for (int j = 0; j < m.GetCol(); j++)
+    for (size_t i = 0; i < m.GetRow(); i++)
+        for (size_t j = 0; j < m.GetCol(); j++)
             istr >> m(i, j);
     return(istr);
 }
 
-ostream& operator<<(ostream& ostr, matrix& m) //перегрузка оператора вывода матрицы
+ostream& operator<<(ostream& ostr, Matrix& m) //перегрузка оператора вывода матрицы
 {
-    for (int i = 0; i < m.GetRow(); i++)
+    for (size_t i = 0; i < m.GetRow(); i++)
     {
-        for (int j = 0; j < m.GetCol(); j++)
+        for (size_t j = 0; j < m.GetCol(); j++)
             ostr << m(i, j) << "\t";
         ostr << "\n";
     }
     return(ostr);
 }
 
-matrix operator+(matrix& m1, matrix& m2) //перегрузка оператора плюс (бинарный)
+Matrix operator+(Matrix& m1, Matrix& m2) //перегрузка оператора плюс (бинарный)
 {
-    matrix temp(m1.GetRow(), m1.GetCol());
-    for (int i = 0; i < m1.GetRow(); i++)
-        for (int j = 0; j < m1.GetCol(); j++)
+    if (m1.GetRow() != m2.GetRow() || m1.GetCol() != m2.GetCol()) {
+        cout << "Inappropriate size";
+        return m1;
+    }
+    Matrix temp(m1.GetRow(), m1.GetCol());
+    for (size_t i = 0; i < m1.GetRow(); i++)
+        for (size_t j = 0; j < m1.GetCol(); j++)
             temp(i, j) = m1(i, j) + m2(i, j);
     return(temp);
 }
 
-matrix operator-(matrix& m1, matrix& m2) //перегрузка оператора минус (бинарный)
+Matrix operator-(Matrix& m1, Matrix& m2) //перегрузка оператора минус (бинарный)
 {
-    matrix temp1(m1.GetRow(), m1.GetCol());
-    for (int i = 0; i < m1.GetRow(); i++)
-        for (int j = 0; j < m1.GetCol(); j++)
+    Matrix temp1(m1.GetRow(), m1.GetCol());
+    for (size_t i = 0; i < m1.GetRow(); i++)
+        for (size_t j = 0; j < m1.GetCol(); j++)
             temp1(i, j) = m1(i, j) - m2(i, j);
     return(temp1);
 }
 
-double& matrix::operator()(int row, int col)//перегрузка круглых скобок дл€ матрицы.
+double& Matrix::operator()(size_t row, size_t col)//перегрузка круглых скобок дл€ матрицы.
 {                             // ≈сли m - матрица, то m(i,j) будет
     return (Value[row][col]);  //означать i,j-тый элемент матрицы
 }
 
-double matrix::operator()(int row, int col) const//перегрузка круглых скобок дл€ матрицы.
+double Matrix::operator()(size_t row, size_t col) const//перегрузка круглых скобок дл€ матрицы.
 {                             // ≈сли m - матрица, то m(i,j) будет
     return (Value[row][col]);  //означать i,j-тый элемент матрицы
 }
-matrix& matrix::operator*=(int n) {
-    for (int i = 0; i < this->Row; ++i) {
-        for (int j = 0; j < this->Col; ++j) {
+Matrix& Matrix::operator*=(size_t n) {
+    for (size_t i = 0; i < this->Row; ++i) {
+        for (size_t j = 0; j < this->Col; ++j) {
             Value[i][j] *= n;
         }
     }
     return *this;
 }
 
-matrix::~matrix() //деструктор
+Matrix::~Matrix() //деструктор
 {
-    for (int i = 0; i < Row; i++)
+    for (size_t i = 0; i < Row; i++)
         delete[] Value[i]; //деструктор удал€ет из пам€ти динамический массив, созданный конструктором
     delete[] Value;
 }
