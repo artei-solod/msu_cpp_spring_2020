@@ -1,5 +1,6 @@
 #include <iostream>
 #include "mxtlib.h"
+using namespace std;
 int main()
 {
     size_t m = 2;
@@ -11,7 +12,7 @@ int main()
         }
     }
     if (a[1][1] == 1) {
-        cout << "Ok";
+        cout << "Yes"<< '\n';
     };
     return 0;
 }

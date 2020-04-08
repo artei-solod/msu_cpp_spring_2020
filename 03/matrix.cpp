@@ -1,120 +1,151 @@
-#include <iostream>
 #include "mxtlib.h"
-using namespace std;
 
+size_t Matrix::getRows() const { return m; }
+size_t Matrix::getColumns() const { return n; }
 
-Matrix::Matrix(size_t row, size_t col)
+Matrix::Matrix(size_t size1, size_t size2) : m(size1), n(size2)
 {
-    Row = row;  //переменным Row и Col присваиются вводимые значения числа строк и столбцов матрицы
-    Col = col;
-    Value = new double* [row];  //конструктор создает двумерный динамический массив
-    for (int i = 0; i < row; i++) Value[i] = new double[col];
+	mtx = (uint32_t**)malloc(sizeof(uint32_t*) * m);
+	if (!mtx) throw std::out_of_range("Init Error!");
+	for (size_t i = 0; i < m; i++)
+	{
+		mtx[i] = (uint32_t*)malloc(sizeof(uint32_t) * n);
+		if (!mtx[i])
+		{
+			throw std::out_of_range("Init Error!");
+			for (size_t j = 0; j < i; j++)
+			{
+				free(mtx[j]);
+			}
+			free(mtx);
+		}
+	}
 }
 
-Matrix::Matrix(const Matrix& m) //копирующий конструктор - создает копию матрицы m
-    :Row(m.Row), Col(m.Col)
+Matrix::Matrix(const Matrix& cp)
 {
-    Value = new double* [Row];
-    for (size_t i = 0; i < Row; i++)  Value[i] = new double[Col];
-    for (size_t i = 0; i < Row; i++)
-    {
-        for (size_t j = 0; j < Col; j++)
-            Value[i][j] = m.Value[i][j];
-    } // значения элементов матрицы будут такими же, как у матрицы m
+	m = cp.m;
+	n = cp.n;
+	mtx = (uint32_t**)malloc(sizeof(uint32_t*) * m);
+	if (!mtx) throw std::out_of_range("Copy Error!");
+	for (size_t i = 0; i < m; i++)
+	{
+		mtx[i] = (uint32_t*)malloc(sizeof(uint32_t) * n);
+		if (!mtx[i])
+		{
+			throw std::out_of_range("Copy Error!");
+			for (size_t j = 0; j < i; j++)
+			{
+				free(mtx[j]);
+			}
+			free(mtx);
+		}
+	}
+	for (size_t i = 0; i < m; i++)
+	{
+		for (size_t j = 0; j < n; j++)
+		{
+			mtx[i][j] = cp.mtx[i][j];
+		}
+	}
 }
-Matrix::Vec::Vec(double * mas, size_t sz)
+
+void Matrix::MtxRead(std::istream& in)
 {
-    vn = sz;
-    v = mas;
+	for (size_t i = 0; i < m; i++)
+	{
+		for (size_t j = 0; j < n; j++)
+		{
+			in >> mtx[i][j];
+		}
+	}
 }
-
-double& Matrix::Vec::operator[](const size_t i)
+void Matrix::MtxPrint(std::ostream& out)
 {
-    if (i >= vn) throw std::out_of_range("Size Error!");
-    return (this->v)[i];
+	for (size_t i = 0; i < m; i++)
+	{
+		for (size_t j = 0; j < n; j++)
+		{
+			out << mtx[i][j] << ' ';
+		}
+		out << '\n';
+	}
 }
 
-Matrix::Vec Matrix::operator[](size_t i) const
+Matrix& Matrix::operator*=(const uint32_t p)
 {
-    if (i >= Row) throw std::out_of_range("Size Error!");
-    Vec r(Value[i], Col);
-    return r;
+	for (size_t i = 0; i < m; i++)
+	{
+		for (size_t j = 0; j < n; j++)
+		{
+			mtx[i][j] *= p;
+		}
+	}
 }
 
-
-
-size_t Matrix::GetRow() //функция получает значение числа строк
+bool Matrix::operator==(const Matrix& op2)
 {
-    return (Row);
+	bool res = true;
+	if (m != op2.m || n != op2.n)
+	{
+		return false;
+	}
+	for (size_t i = 0; i < m; i++)
+	{
+		for (size_t j = 0; j < n; j++)
+		{
+			res &= (mtx[i][j] == op2.mtx[i][j]);
+			if (!res)
+			{
+				break;
+			}
+		}
+	}
+	return res;
 }
 
-size_t Matrix::GetCol() //функция получает значение числа столбцов
+bool Matrix::operator!=(const Matrix& op2)
 {
-    return (Col);
+
+	return !(*this == op2);
 }
 
-istream& operator>>(istream& istr, Matrix& m) // перегрузка оператора ввода матрицы
+Matrix::Vec::Vec(uint32_t* mas, size_t sz)
 {
-    for (size_t i = 0; i < m.GetRow(); i++)
-        for (size_t j = 0; j < m.GetCol(); j++)
-            istr >> m(i, j);
-    return(istr);
+	vn = sz;
+	v = mas;
 }
 
-ostream& operator<<(ostream& ostr, Matrix& m) //перегрузка оператора вывода матрицы
+uint32_t& Matrix::Vec::operator[](const size_t i)
 {
-    for (size_t i = 0; i < m.GetRow(); i++)
-    {
-        for (size_t j = 0; j < m.GetCol(); j++)
-            ostr << m(i, j) << "\t";
-        ostr << "\n";
-    }
-    return(ostr);
+	if (i >= vn) throw std::out_of_range("Size Error!");
+	return v[i];
 }
 
-Matrix operator+(Matrix& m1, Matrix& m2) //перегрузка оператора плюс (бинарный)
+const uint32_t& Matrix::Vec::operator[](const size_t i) const
 {
-    if (m1.GetRow() != m2.GetRow() || m1.GetCol() != m2.GetCol()) {
-        cout << "Inappropriate size";
-        return m1;
-    }
-    Matrix temp(m1.GetRow(), m1.GetCol());
-    for (size_t i = 0; i < m1.GetRow(); i++)
-        for (size_t j = 0; j < m1.GetCol(); j++)
-            temp(i, j) = m1(i, j) + m2(i, j);
-    return(temp);
+	if (i >= vn) throw std::out_of_range("Size Error!");
+	return v[i];
 }
 
-Matrix operator-(Matrix& m1, Matrix& m2) //перегрузка оператора минус (бинарный)
+Matrix::Vec Matrix::operator[](const size_t i)
 {
-    Matrix temp1(m1.GetRow(), m1.GetCol());
-    for (size_t i = 0; i < m1.GetRow(); i++)
-        for (size_t j = 0; j < m1.GetCol(); j++)
-            temp1(i, j) = m1(i, j) - m2(i, j);
-    return(temp1);
+	if (i >= m) throw std::out_of_range("Size Error!");
+	return Vec(mtx[i], this->n);
 }
 
-double& Matrix::operator()(size_t row, size_t col)//перегрузка круглых скобок для матрицы.
-{                             // Если m - матрица, то m(i,j) будет
-    return (Value[row][col]);  //означать i,j-тый элемент матрицы
-}
-
-double Matrix::operator()(size_t row, size_t col) const//перегрузка круглых скобок для матрицы.
-{                             // Если m - матрица, то m(i,j) будет
-    return (Value[row][col]);  //означать i,j-тый элемент матрицы
-}
-Matrix& Matrix::operator*=(size_t n) {
-    for (size_t i = 0; i < this->Row; ++i) {
-        for (size_t j = 0; j < this->Col; ++j) {
-            Value[i][j] *= n;
-        }
-    }
-    return *this;
-}
-
-Matrix::~Matrix() //деструктор
+const Matrix::Vec Matrix::operator[](const size_t i) const
 {
-    for (size_t i = 0; i < Row; i++)
-        delete[] Value[i]; //деструктор удаляет из памяти динамический массив, созданный конструктором
-    delete[] Value;
+	if (i >= m) throw std::out_of_range("Size Error!");
+	return Vec(mtx[i], this->n);
+}
+
+
+Matrix::~Matrix()
+{
+	for (size_t i = 0; i < m; i++)
+	{
+		free(mtx[i]);
+	}
+	free(mtx);
 }
