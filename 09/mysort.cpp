@@ -1,37 +1,9 @@
-#include <iostream>
-#include <fstream>
-#include <algorithm>  
-#include <thread>
-#include <mutex>
-#include <chrono>
-
-#pragma warning (disable : 4996)
+#include "mysort.h"
 
 uint64_t  N = 1000000;
 using namespace std;
 
-class Timer
-{
-	using clock_t = std::chrono::high_resolution_clock;
-	using microseconds = std::chrono::microseconds;
-public:
-	Timer()
-		: start_(clock_t::now())
-	{
-	}
 
-	~Timer()
-	{
-		const auto finish = clock_t::now();
-		const auto us =
-			std::chrono::duration_cast<microseconds>
-			(finish - start_).count();
-		std::cout << us << " us" << std::endl;
-	}
-
-private:
-	const clock_t::time_point start_;
-};
 
 std::mutex mute;
 condition_variable ready;
@@ -163,11 +135,3 @@ bool simpleMergeSort(const char* name)
 	return true;
 }
 
-int main()
-{
-	{
-		Timer t;
-		cout << simpleMergeSort("my_data.dat") << endl;
-	}
-	return 0;
-}
